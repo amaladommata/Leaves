@@ -1,35 +1,23 @@
 // ---------------------------------------------------------------------------
-// Google Sheet connection
+// Google Sheet connection (private sheet, via an Apps Script web app)
 //
-// The dashboard reads its data live from a Google Sheet. To connect your own
-// sheet, set these two values as environment variables in Vercel (or in a
-// local .env file):
+// The dashboard reads its data from a Google Apps Script "web app" that you
+// deploy from your own (private) sheet. The sheet itself stays private — it is
+// never shared publicly. The script runs as you and returns the rows as JSON.
 //
-//   VITE_SHEET_ID    – the long id in the sheet URL:
-//                      https://docs.google.com/spreadsheets/d/<THIS_PART>/edit
-//   VITE_SHEET_NAME  – the tab name to read (defaults to "Sheet1")
+// Set this one environment variable in Vercel (Project → Settings →
+// Environment Variables) and locally in a .env file:
 //
-// The sheet must be shared as "Anyone with the link – Viewer" so the browser
-// can read it. See README.md for the full step-by-step.
+//   VITE_SHEET_API_URL – the "/exec" web-app URL you get when you deploy the
+//                        Apps Script (see apps-script/Code.gs and README.md)
 //
-// If no sheet is configured the dashboard falls back to bundled demo data so
-// you can still see the layout.
+// If it is not set, the dashboard falls back to bundled demo data so you can
+// still see the layout.
 // ---------------------------------------------------------------------------
 
-export const SHEET_ID: string = import.meta.env.VITE_SHEET_ID ?? "";
-export const SHEET_NAME: string = import.meta.env.VITE_SHEET_NAME ?? "Sheet1";
+export const SHEET_API_URL: string = import.meta.env.VITE_SHEET_API_URL ?? "";
 
-/** How often (ms) to re-poll the sheet so edits show up automatically. */
+/** How often (ms) to re-poll so sheet edits show up automatically. */
 export const REFRESH_INTERVAL_MS = 60_000;
 
-export const hasSheet = SHEET_ID.trim().length > 0;
-
-/** gviz CSV endpoint – works for any link-viewable sheet, no API key needed. */
-export function sheetCsvUrl(): string {
-  const base = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq`;
-  const params = new URLSearchParams({
-    tqx: "out:csv",
-    sheet: SHEET_NAME,
-  });
-  return `${base}?${params.toString()}`;
-}
+export const hasSheet = SHEET_API_URL.trim().length > 0;

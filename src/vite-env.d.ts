@@ -1,8 +1,7 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
-  readonly VITE_SHEET_ID?: string;
-  readonly VITE_SHEET_NAME?: string;
+  readonly VITE_SHEET_API_URL?: string;
 }
 
 interface ImportMeta {

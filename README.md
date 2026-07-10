@@ -1,75 +1,83 @@
 # Leave Tracker Dashboard
 
 A React dashboard for company leave data, styled after the weekly leave
-tracker layout. Data is read **live from a Google Sheet** — edit the sheet and
-the dashboard updates on its own (it re-polls every 60 seconds and whenever you
-switch back to the tab). Built with Vite + React, deploys to Vercel in one
-click, no backend or database required.
+tracker layout. Data is read **live from a private Google Sheet** — edit the
+sheet and the dashboard updates on its own (it re-polls every 60 seconds and
+whenever you switch back to the tab). Built with Vite + React, deploys to
+Vercel as a static site.
 
 ![Leave Tracker](docs/preview.png)
 
 ## How it works
 
 ```
-Google Sheet  ──(published CSV, read in the browser)──►  React dashboard on Vercel
+Private Google Sheet
+      │  (Apps Script web app, runs as you, returns JSON)
+      ▼
+React dashboard on Vercel
 ```
 
-The browser fetches the sheet through Google's public CSV endpoint, so there
-are **no API keys or secrets** to manage. The only requirement is that the sheet
-is shared as *"Anyone with the link → Viewer."*
+Your **sheet stays private** — it is never shared publicly. A tiny Google Apps
+Script deployed *from the sheet* runs under your own account and serves the rows
+as JSON to the dashboard.
 
-Until a sheet is connected, the dashboard shows bundled **demo data** so you can
-see the layout immediately.
+Until a web app is connected, the dashboard shows bundled **demo data** so you
+can see the layout immediately.
 
 ---
 
-## Setup — three steps
+## Setup
 
 ### 1. Prepare your Google Sheet
 
-1. Put your leave data in a Google Sheet. Keep the header row exactly as your
-   export has it:
+Put your leave data in a Google Sheet. Keep the header row exactly as your
+export has it:
 
-   > `Employee Name`, `Mediamint ID`, `Email`, `Manager Name`, `Leave Type`,
-   > `No. of Days/Hours`, `Applied On`, `Leave Dates`, `Reason`, `Day`,
-   > `Start Date`, `End Date`, `Status`
+> `Employee Name`, `Mediamint ID`, `Email`, `Manager Name`, `Leave Type`,
+> `No. of Days/Hours`, `Applied On`, `Leave Dates`, `Reason`, `Day`,
+> `Start Date`, `End Date`, `Status`
 
-   (Column order doesn't matter — columns are matched by header name. Extra
-   columns are ignored.)
+(Column order doesn't matter — columns are matched by header name. Extra
+columns are ignored. An optional `Country` / `Location` column is used by the
+country chart.)
 
-2. Click **Share** (top-right) → under *General access* choose
-   **Anyone with the link** → role **Viewer** → **Done**.
+**Keep the sheet private — do not change its sharing.**
 
-3. Copy the sheet **id** from the URL — the long part between `/d/` and `/edit`:
+### 2. Deploy the Apps Script web app
 
-   ```
-   https://docs.google.com/spreadsheets/d/16abcXYZ...long-id...789/edit#gid=0
-                                          └──────────  this  ──────────┘
-   ```
+1. In the sheet, open **Extensions → Apps Script**.
+2. Delete any code there and paste the contents of
+   [`apps-script/Code.gs`](apps-script/Code.gs). If your tab isn't named
+   `Sheet1`, change the `SHEET_NAME` line at the top.
+3. Click **Deploy → New deployment**. For *Select type* choose **Web app**, then:
+   - **Execute as:** `Me`
+   - **Who has access:** `Anyone`
+4. Click **Deploy**, authorize when prompted, and **copy the Web app URL** — it
+   ends in `/exec`.
 
-> **To update the dashboard, just edit the sheet.** New rows, status changes,
-> etc. appear automatically within a minute (or immediately on the **Refresh**
-> button).
+> This keeps the sheet private. The script runs as you; only the JSON rows are
+> exposed at the `/exec` URL.
 
-### 2. Push this repo to GitHub
+### 3. Point the dashboard at it (Vercel)
 
-It's already a git repo. Create a repo on GitHub and push (or use this one).
-
-### 3. Deploy to Vercel
-
-1. Go to [vercel.com](https://vercel.com) → **Add New… → Project** → import this
-   GitHub repo. Vercel auto-detects Vite (build `npm run build`, output `dist`).
-2. Before deploying, open **Environment Variables** and add:
+1. In your Vercel project → **Settings → Environment Variables**, add:
 
    | Name | Value |
    | --- | --- |
-   | `VITE_SHEET_ID` | the sheet id you copied in step 1 |
-   | `VITE_SHEET_NAME` | the tab name, e.g. `Sheet1` |
+   | `VITE_SHEET_API_URL` | the `/exec` Web app URL from step 2 |
 
-3. Click **Deploy**. Done — your dashboard is live.
+   (If you previously added `VITE_SHEET_ID` / `VITE_SHEET_NAME`, you can delete
+   them — they're no longer used.)
 
-> Changed the env vars later? Trigger a redeploy in Vercel so the new values
-> take effect (they're baked in at build time).
+2. **Redeploy** so the new value is picked up: **Deployments → ⋯ on the latest →
+   Redeploy**. Vite bakes env vars in at build time, so a redeploy is required.
+
+Done — the dashboard now reads your private sheet.
+
+> **To update the dashboard, just edit the sheet.** New rows and status changes
+> appear on their own within a minute (or immediately via the **Refresh**
+> button). Change the Apps Script later? Use **Deploy → Manage deployments →
+> edit → Version: New version** so the same `/exec` URL keeps working.
 
 ---
 
@@ -77,7 +85,7 @@ It's already a git repo. Create a repo on GitHub and push (or use this one).
 
 ```bash
 npm install
-cp .env.example .env      # then fill in VITE_SHEET_ID / VITE_SHEET_NAME
+cp .env.example .env      # then fill in VITE_SHEET_API_URL
 npm run dev               # http://localhost:5173
 ```
 
