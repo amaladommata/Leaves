@@ -68,8 +68,8 @@ export default function App() {
       )}
       {usingSample && !error && (
         <div className="banner info">
-          No Google Sheet connected yet. Set <code>VITE_SHEET_ID</code> to display your live
-          data — see the README for the 2-minute setup.
+          No Google Sheet connected yet. Set <code>VITE_SHEET_API_URL</code> to display your
+          live data — see the README for the Apps Script setup.
         </div>
       )}
 
