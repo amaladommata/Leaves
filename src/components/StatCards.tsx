@@ -10,6 +10,7 @@ const CARDS: Card[] = [
   { key: "pending", label: "New requests", accent: "#3987e5" },
   { key: "approved", label: "Approved", accent: "#0ca30c" },
   { key: "rejected", label: "Rejected", accent: "#d03b3b" },
+  { key: "withdrawn", label: "Withdrawn", accent: "#ec835a" },
   { key: "total", label: "Total leaves", accent: "#c3c2b7" },
 ];
 

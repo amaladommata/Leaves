@@ -58,6 +58,7 @@ export interface Summary {
   pending: number;
   approved: number;
   rejected: number;
+  withdrawn: number;
   total: number;
 }
 
@@ -65,13 +66,15 @@ export function summarize(rows: LeaveRow[]): Summary {
   let pending = 0;
   let approved = 0;
   let rejected = 0;
+  let withdrawn = 0;
   for (const r of rows) {
     const s = r.status.toLowerCase();
     if (s === "pending") pending++;
     else if (s === "approved") approved++;
     else if (s === "rejected") rejected++;
+    else if (s === "withdrawn") withdrawn++;
   }
-  return { pending, approved, rejected, total: rows.length };
+  return { pending, approved, rejected, withdrawn, total: rows.length };
 }
 
 export interface TypeSlice {
