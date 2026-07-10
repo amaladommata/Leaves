@@ -3,19 +3,25 @@ import { useLeaveData } from "./lib/useLeaveData";
 import {
   applyFilters,
   leavesByType,
-  leavesByMonth,
+  leavesByCountry,
   summarize,
   presentLeaveTypes,
   presentStatuses,
+  presentCountries,
   type Filters as FilterState,
 } from "./lib/transform";
 import { StatCards } from "./components/StatCards";
 import { LeaveTypePie } from "./components/LeaveTypePie";
-import { MonthTrend } from "./components/MonthTrend";
+import { CountryBar } from "./components/CountryBar";
 import { Filters } from "./components/Filters";
 import { LeaveTable } from "./components/LeaveTable";
 
-const EMPTY_FILTERS: FilterState = { leaveType: "", status: "", search: "" };
+const EMPTY_FILTERS: FilterState = {
+  leaveType: "",
+  status: "",
+  country: "",
+  search: "",
+};
 
 export default function App() {
   const { rows, loading, error, lastUpdated, usingSample, refresh } = useLeaveData();
@@ -24,9 +30,10 @@ export default function App() {
   const filtered = useMemo(() => applyFilters(rows, filters), [rows, filters]);
   const summary = useMemo(() => summarize(filtered), [filtered]);
   const slices = useMemo(() => leavesByType(filtered), [filtered]);
-  const months = useMemo(() => leavesByMonth(filtered), [filtered]);
+  const countries = useMemo(() => leavesByCountry(filtered), [filtered]);
   const leaveTypes = useMemo(() => presentLeaveTypes(rows), [rows]);
   const statuses = useMemo(() => presentStatuses(rows), [rows]);
+  const countryOptions = useMemo(() => presentCountries(rows), [rows]);
 
   return (
     <div className="app">
@@ -71,6 +78,7 @@ export default function App() {
         onChange={setFilters}
         leaveTypes={leaveTypes}
         statuses={statuses}
+        countries={countryOptions}
       />
 
       <StatCards summary={summary} />
@@ -81,8 +89,8 @@ export default function App() {
           <LeaveTypePie slices={slices} />
         </div>
         <div className="panel">
-          <h2 className="panel-title">Applications by month</h2>
-          <MonthTrend data={months} />
+          <h2 className="panel-title">Leaves by country</h2>
+          <CountryBar data={countries} />
         </div>
       </div>
 

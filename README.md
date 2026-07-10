@@ -95,10 +95,16 @@ npm run preview           # serve the production build locally
 - **Stat cards** — new (pending) requests, approved, rejected, and total leaves.
 - **Leaves by type** — donut chart with a per-type breakdown; the long tail of
   rare types folds into "Other."
-- **Applications by month** — trend of how many requests were filed each month.
+- **Leaves by country** — bar chart of leaves per country (see the note below on
+  the optional `Country` column).
 - **Leave records** — every leave, grouped by type, with a colored status pill.
-- **Filters** — search by name / ID / manager, plus leave-type and status
-  dropdowns. All charts and cards respond to the filters.
+- **Filters** — search by name / ID / manager, plus leave-type, status, and
+  country dropdowns. All charts and cards respond to the filters.
+
+> **Country column (optional).** If your sheet has a `Country` (or `Location`)
+> column it is used directly. If it doesn't, every row defaults to **India** —
+> change that default in `src/lib/types.ts` (`DEFAULT_COUNTRY`), or add a
+> `Country` column to your sheet to break the bar chart out by office.
 
 ## Customizing
 

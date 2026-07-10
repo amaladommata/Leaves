@@ -1,5 +1,5 @@
 import Papa from "papaparse";
-import { HEADER_MAP, type LeaveRow } from "./types";
+import { HEADER_MAP, DEFAULT_COUNTRY, type LeaveRow } from "./types";
 import { hasSheet, sheetCsvUrl } from "./config";
 import { SAMPLE_ROWS } from "./sample";
 
@@ -9,7 +9,7 @@ function rowFromRecord(rec: Record<string, string>): LeaveRow {
     const field = HEADER_MAP[rawKey.trim().toLowerCase()];
     if (field) out[field] = (rawVal ?? "").trim();
   }
-  return {
+  const base: LeaveRow = {
     employeeName: "",
     mediamintId: "",
     email: "",
@@ -23,8 +23,11 @@ function rowFromRecord(rec: Record<string, string>): LeaveRow {
     startDate: "",
     endDate: "",
     status: "",
+    country: "",
     ...out,
   };
+  if (!base.country) base.country = DEFAULT_COUNTRY;
+  return base;
 }
 
 /**

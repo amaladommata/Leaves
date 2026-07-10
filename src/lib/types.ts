@@ -12,7 +12,11 @@ export interface LeaveRow {
   startDate: string;
   endDate: string;
   status: string; // "Approved" | "Pending" | "Rejected" | ...
+  country: string; // from a "Country" column if present, else defaults
 }
+
+/** Country used when the sheet has no Country column. */
+export const DEFAULT_COUNTRY = "India";
 
 /** Maps a Google Sheet header name to the LeaveRow field. Case/space tolerant. */
 export const HEADER_MAP: Record<string, keyof LeaveRow> = {
@@ -31,4 +35,6 @@ export const HEADER_MAP: Record<string, keyof LeaveRow> = {
   "start date": "startDate",
   "end date": "endDate",
   status: "status",
+  country: "country",
+  location: "country",
 };

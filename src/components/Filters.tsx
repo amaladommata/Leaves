@@ -6,9 +6,10 @@ interface Props {
   onChange: (next: FilterState) => void;
   leaveTypes: string[];
   statuses: string[];
+  countries: string[];
 }
 
-export function Filters({ filters, onChange, leaveTypes, statuses }: Props) {
+export function Filters({ filters, onChange, leaveTypes, statuses, countries }: Props) {
   return (
     <div className="filters">
       <input
@@ -40,6 +41,19 @@ export function Filters({ filters, onChange, leaveTypes, statuses }: Props) {
           </option>
         ))}
       </select>
+      {countries.length > 1 && (
+        <select
+          value={filters.country}
+          onChange={(e) => onChange({ ...filters, country: e.target.value })}
+        >
+          <option value="">All countries</option>
+          {countries.map((c) => (
+            <option key={c} value={c}>
+              {c}
+            </option>
+          ))}
+        </select>
+      )}
     </div>
   );
 }

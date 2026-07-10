@@ -150,6 +150,23 @@ export function leavesByMonth(rows: LeaveRow[], months = 12): MonthBucket[] {
   });
 }
 
+export interface CountryBucket {
+  country: string;
+  value: number;
+}
+
+/** Leave counts per country, largest first (drives the country bar chart). */
+export function leavesByCountry(rows: LeaveRow[]): CountryBucket[] {
+  const counts = new Map<string, number>();
+  for (const r of rows) {
+    const c = r.country?.trim() || "Unknown";
+    counts.set(c, (counts.get(c) ?? 0) + 1);
+  }
+  return [...counts.entries()]
+    .map(([country, value]) => ({ country, value }))
+    .sort((a, b) => b.value - a.value);
+}
+
 /** Distinct leave-type codes present, most common first (for the filter menu). */
 export function presentLeaveTypes(rows: LeaveRow[]): string[] {
   const counts = new Map<string, number>();
@@ -166,11 +183,21 @@ export function presentStatuses(rows: LeaveRow[]): string[] {
   return [...seen];
 }
 
+export function presentCountries(rows: LeaveRow[]): string[] {
+  const counts = new Map<string, number>();
+  for (const r of rows) {
+    const c = r.country?.trim();
+    if (c) counts.set(c, (counts.get(c) ?? 0) + 1);
+  }
+  return [...counts.entries()].sort((a, b) => b[1] - a[1]).map(([c]) => c);
+}
+
 // --- Filtering ---------------------------------------------------------------
 
 export interface Filters {
   leaveType: string; // "" = all
   status: string; // "" = all
+  country: string; // "" = all
   search: string;
 }
 
@@ -179,6 +206,7 @@ export function applyFilters(rows: LeaveRow[], f: Filters): LeaveRow[] {
   return rows.filter((r) => {
     if (f.leaveType && r.leaveType.toUpperCase() !== f.leaveType) return false;
     if (f.status && r.status !== f.status) return false;
+    if (f.country && r.country !== f.country) return false;
     if (q) {
       const hay = `${r.employeeName} ${r.mediamintId} ${r.managerName} ${r.email}`.toLowerCase();
       if (!hay.includes(q)) return false;

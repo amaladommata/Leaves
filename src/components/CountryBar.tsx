@@ -8,22 +8,25 @@ import {
   Tooltip,
   Cell,
 } from "recharts";
-import type { MonthBucket } from "../lib/transform";
+import type { CountryBucket } from "../lib/transform";
 
-// Single-series magnitude over time → one hue (blue), no legend needed.
+// Single-series magnitude across countries → one hue (blue), no legend needed.
 const BAR = "#3987e5";
 const BAR_HOVER = "#5598e7";
 
-export function MonthTrend({ data }: { data: MonthBucket[] }) {
+export function CountryBar({ data }: { data: CountryBucket[] }) {
   if (!data.length) {
-    return <div className="empty">No dated applications to chart.</div>;
+    return <div className="empty">No leaves match the current filters.</div>;
   }
+  // A single country reads better as a narrow bar than one stretched across.
+  const barSize = data.length === 1 ? 64 : undefined;
+
   return (
     <ResponsiveContainer width="100%" height={240}>
       <BarChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: -18 }}>
         <CartesianGrid vertical={false} stroke="var(--gridline)" />
         <XAxis
-          dataKey="label"
+          dataKey="country"
           tick={{ fill: "var(--muted)", fontSize: 11 }}
           axisLine={{ stroke: "var(--baseline)" }}
           tickLine={false}
@@ -43,7 +46,7 @@ export function MonthTrend({ data }: { data: MonthBucket[] }) {
               <div className="chart-tip">
                 <strong>{label}</strong>
                 <span className="muted">
-                  {Number(payload[0].value).toLocaleString()} applications
+                  {Number(payload[0].value).toLocaleString()} leaves
                 </span>
               </div>
             );
@@ -52,11 +55,12 @@ export function MonthTrend({ data }: { data: MonthBucket[] }) {
         <Bar
           dataKey="value"
           radius={[4, 4, 0, 0]}
+          barSize={barSize}
           isAnimationActive={false}
           activeBar={{ fill: BAR_HOVER }}
         >
           {data.map((d) => (
-            <Cell key={d.key} fill={BAR} />
+            <Cell key={d.country} fill={BAR} />
           ))}
         </Bar>
       </BarChart>
