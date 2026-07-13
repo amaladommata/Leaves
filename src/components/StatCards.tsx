@@ -1,26 +1,20 @@
-import type { Summary } from "../lib/transform";
-
-interface Card {
-  key: keyof Summary;
+export interface StatCard {
   label: string;
-  accent: string;
+  value: number;
+  tone: string; // css class suffix: neutral | good | warn | blue | crit | wdrw
+  dot?: string; // optional colored dot before the label
 }
 
-const CARDS: Card[] = [
-  { key: "pending", label: "New requests", accent: "#3987e5" },
-  { key: "approved", label: "Approved", accent: "#0ca30c" },
-  { key: "rejected", label: "Rejected", accent: "#d03b3b" },
-  { key: "withdrawn", label: "Withdrawn", accent: "#ec835a" },
-  { key: "total", label: "Total leaves", accent: "#c3c2b7" },
-];
-
-export function StatCards({ summary }: { summary: Summary }) {
+export function StatCards({ cards }: { cards: StatCard[] }) {
   return (
-    <div className="stat-grid">
-      {CARDS.map((c) => (
-        <div className="stat-card" key={c.key} style={{ ["--accent" as string]: c.accent }}>
-          <div className="stat-label">{c.label}</div>
-          <div className="stat-value">{summary[c.key].toLocaleString()}</div>
+    <div className={`stat-grid cards-${cards.length}`}>
+      {cards.map((c) => (
+        <div className={`stat-card tone-${c.tone}`} key={c.label}>
+          <div className="stat-label">
+            {c.dot && <span className="dot" style={{ background: c.dot }} />}
+            {c.label}
+          </div>
+          <div className="stat-value">{c.value.toLocaleString()}</div>
         </div>
       ))}
     </div>

@@ -100,33 +100,51 @@ npm run preview           # serve the production build locally
 
 ## What's on the dashboard
 
-- **Stat cards** — new (pending) requests, approved, rejected, and total leaves.
-- **Leaves by type** — donut chart with a per-type breakdown; the long tail of
-  rare types folds into "Other."
-- **Leaves by country** — bar chart of leaves per country (see the note below on
-  the optional `Country` column).
-- **Cases in detail** — a focused table of only the long/sensitive cases worth
-  tracking individually: **Maternity** (`ML`), **Loss of Pay** (`LOP`), and
-  **Long Medical Leave** (sick leave `SL` lasting a week or more). Empty groups
-  are hidden. The charts and stat cards above still reflect *all* leave types.
-- **Filters** — search by name / ID / manager, plus leave-type, status, and
-  country dropdowns. All charts and cards respond to the filters.
+A left **sidebar** switches between four views:
+
+- **Maternity** (`ML`), **Medical >1wk** (sick leave `SL` of a week or more), and
+  **Long leave / LOP** (`LOP`) — each is a focused page with an employee detail
+  table and four activity cards: **Total · Ongoing · Upcoming · Returning this week**.
+- **All leaves** — the company-wide overview: **New requests · Approved · Rejected ·
+  Withdrawn · Total** cards, a **Leaves by type** donut, a **Leaves by country**
+  bar chart, and a full employee detail table (with a Leave-type column).
+
+Every page shares the same filter bar — **search · leave type** (All leaves only)
+**· leave status · approval status · date range** — and the same detail table
+columns: MM ID · Employee · Country · Start · End · Return · Leave status · Approval.
+
+### Leave status & dates
+
+- **Leave status** is computed against today: **Upcoming** (starts after today),
+  **Ongoing** (today falls within the leave), **Completed** (already ended).
+- Because the sheet's `Start Date`/`End Date` columns are blank for sick leave and
+  single-day entries, the **leave window is derived from the `Leave Dates` list**
+  (first date → last date), falling back to the Start/End columns when present.
+- **Return date** = the day after the leave ends. **Returning this week** counts
+  leaves ending in the current Mon–Sun week.
+
+### Date range
+
+The date filter defaults to the **current financial year** (India, Apr 1 – Mar 31).
+The dropdown also lists prior FYs, **All time**, and a **Custom range** (two date
+pickers). It filters on each leave's start date.
 
 > **Country column (optional).** If your sheet has a `Country` (or `Location`)
 > column it is used directly. If it doesn't, every row defaults to **India** —
-> change that default in `src/lib/types.ts` (`DEFAULT_COUNTRY`), or add a
-> `Country` column to your sheet to break the bar chart out by office.
+> change that default in `src/lib/types.ts` (`DEFAULT_COUNTRY`).
 
 ## Customizing
 
 | Want to change… | Edit |
 | --- | --- |
+| Sidebar categories & titles | `src/lib/transform.ts` (`VIEWS`, `inCategory`) |
+| "Long medical" threshold | `src/lib/transform.ts` (`LONG_MEDICAL_MIN_DAYS`) |
 | Leave-type names & colors | `src/lib/transform.ts` (`LEAVE_TYPES`) |
-| Status colors / labels | `src/lib/transform.ts` (`statusMeta`) |
+| Approval / leave-status labels & colors | `src/lib/transform.ts` (`statusMeta`, `stateMeta`) |
+| Financial-year start / date logic | `src/lib/dates.ts` |
 | How often it re-polls | `src/lib/config.ts` (`REFRESH_INTERVAL_MS`) |
-| Which cases the detail table shows | `src/lib/transform.ts` (`detailGroups`, `LONG_MEDICAL_MIN_DAYS`) |
 | Column → field mapping | `src/lib/types.ts` (`HEADER_MAP`) |
-| Colors, spacing, dark theme | `src/styles.css` |
+| Colors, spacing, light theme | `src/styles.css` |
 
 ## Notes
 

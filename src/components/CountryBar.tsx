@@ -11,8 +11,8 @@ import {
 import type { CountryBucket } from "../lib/transform";
 
 // Single-series magnitude across countries → one hue (blue), no legend needed.
-const BAR = "#3987e5";
-const BAR_HOVER = "#5598e7";
+const BAR = "#2a78d6";
+const BAR_HOVER = "#1c5cab";
 
 export function CountryBar({ data }: { data: CountryBucket[] }) {
   if (!data.length) {
