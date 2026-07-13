@@ -118,7 +118,7 @@ export type ViewKey = "maternity" | "medical" | "lop" | "all";
 export const VIEWS: { key: ViewKey; label: string; title: string; dot: string }[] = [
   { key: "maternity", label: "Maternity", title: "Maternity Leave", dot: "#e87ba4" },
   { key: "medical", label: "Medical >1wk", title: "Medical Leave (> 1 week)", dot: "#eda100" },
-  { key: "lop", label: "Long leave / LOP", title: "Long Leave / LOP", dot: "#e34948" },
+  { key: "lop", label: "Loss of Pay (LOP)", title: "Loss of Pay (LOP)", dot: "#e34948" },
   { key: "all", label: "All leaves", title: "All Leaves", dot: "#2a78d6" },
 ];
 

@@ -66,7 +66,6 @@ body { margin: 0; background: var(--page); color: var(--text-primary); }
 .head-mark { width: 44px; height: 44px; border-radius: 11px;
   background: linear-gradient(135deg, #1baf7a, #2a78d6); flex: none; }
 .head h1 { font-size: 22px; margin: 0; letter-spacing: -0.02em; }
-.head .sub { margin: 3px 0 0; font-size: 13px; color: var(--muted); }
 .head-r { display: flex; align-items: center; gap: 10px; }
 .updated { font-size: 12px; color: var(--muted); }
 .btn { border: 1px solid var(--line-strong); background: var(--surface-1); color: var(--text-secondary);

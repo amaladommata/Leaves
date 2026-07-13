@@ -30,13 +30,24 @@ export default function App() {
   const currentFY = fyStartYear(today);
 
   const [view, setView] = useState<ViewKey>("all");
-  const [filters, setFilters] = useState<FilterState>({
+
+  // Each page keeps its own independent filter selection.
+  const makeDefault = (): FilterState => ({
     search: "",
     leaveStatus: [],
     approval: [],
     leaveType: [],
     range: { mode: `fy:${currentFY}`, customFrom: "", customTo: "" },
   });
+  const [filtersByView, setFiltersByView] = useState<Record<ViewKey, FilterState>>(() => ({
+    maternity: makeDefault(),
+    medical: makeDefault(),
+    lop: makeDefault(),
+    all: makeDefault(),
+  }));
+  const filters = filtersByView[view];
+  const setFilters = (next: FilterState) =>
+    setFiltersByView((prev) => ({ ...prev, [view]: next }));
 
   const enriched = useMemo(() => enrichRows(rows, today), [rows, today]);
   const filtered = useMemo(() => applyFilters(enriched, filters, view), [enriched, filters, view]);
@@ -84,11 +95,6 @@ export default function App() {
             <span className="head-mark" aria-hidden />
             <div>
               <h1>{meta.title}</h1>
-              <p className="sub">
-                {usingSample
-                  ? "Showing demo data — connect a Google Sheet to go live"
-                  : "Live from Google Sheets · updates automatically"}
-              </p>
             </div>
           </div>
           <div className="head-r">

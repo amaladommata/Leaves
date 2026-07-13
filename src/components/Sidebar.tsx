@@ -10,7 +10,7 @@ export function Sidebar({ view, onSelect }: Props) {
     <aside className="side">
       <div className="side-brand">
         <span className="side-mark" aria-hidden />
-        <b>Leave Tracker</b>
+        <b>Leave Overview</b>
       </div>
       <div className="side-label">Leave category</div>
       <nav>
