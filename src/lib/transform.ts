@@ -226,3 +226,63 @@ export function sortByAppliedDesc(rows: LeaveRow[]): LeaveRow[] {
     return tb - ta;
   });
 }
+
+// --- Detailed case groups ----------------------------------------------------
+// The detail table below the charts intentionally shows ONLY the long/sensitive
+// leave cases worth tracking individually: maternity, loss of pay, and extended
+// (a week or more) medical/sick leave.
+
+/** A sick/medical leave of this many days or more counts as "long". */
+export const LONG_MEDICAL_MIN_DAYS = 7;
+
+/** Parses the leave length in days from "No. of Days/Hours"; hours-based → 0. */
+export function parseLeaveDays(row: LeaveRow): number {
+  const s = row.daysHours.toLowerCase();
+  if (s.includes("hour")) return 0; // e.g. overtime, not a multi-day leave
+  const num = parseFloat(s);
+  return isNaN(num) ? 0 : num;
+}
+
+export interface DetailGroup {
+  key: string;
+  label: string;
+  color: string;
+  rows: LeaveRow[];
+}
+
+/** The three detail categories, in display order, from the given rows. */
+export function detailGroups(rows: LeaveRow[]): DetailGroup[] {
+  const maternity: LeaveRow[] = [];
+  const longMedical: LeaveRow[] = [];
+  const lop: LeaveRow[] = [];
+
+  for (const r of rows) {
+    const t = r.leaveType.toUpperCase();
+    if (t === "ML") maternity.push(r);
+    else if (t === "LOP") lop.push(r);
+    else if (t === "SL" && parseLeaveDays(r) >= LONG_MEDICAL_MIN_DAYS) {
+      longMedical.push(r);
+    }
+  }
+
+  return [
+    {
+      key: "ML",
+      label: "Maternity Leave",
+      color: leaveTypeMeta("ML").color,
+      rows: sortByAppliedDesc(maternity),
+    },
+    {
+      key: "LONG_MEDICAL",
+      label: `Long Medical Leave (${LONG_MEDICAL_MIN_DAYS}+ days)`,
+      color: leaveTypeMeta("SL").color,
+      rows: sortByAppliedDesc(longMedical),
+    },
+    {
+      key: "LOP",
+      label: "Loss of Pay",
+      color: leaveTypeMeta("LOP").color,
+      rows: sortByAppliedDesc(lop),
+    },
+  ];
+}

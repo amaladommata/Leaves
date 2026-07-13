@@ -105,7 +105,10 @@ npm run preview           # serve the production build locally
   rare types folds into "Other."
 - **Leaves by country** — bar chart of leaves per country (see the note below on
   the optional `Country` column).
-- **Leave records** — every leave, grouped by type, with a colored status pill.
+- **Cases in detail** — a focused table of only the long/sensitive cases worth
+  tracking individually: **Maternity** (`ML`), **Loss of Pay** (`LOP`), and
+  **Long Medical Leave** (sick leave `SL` lasting a week or more). Empty groups
+  are hidden. The charts and stat cards above still reflect *all* leave types.
 - **Filters** — search by name / ID / manager, plus leave-type, status, and
   country dropdowns. All charts and cards respond to the filters.
 
@@ -121,6 +124,7 @@ npm run preview           # serve the production build locally
 | Leave-type names & colors | `src/lib/transform.ts` (`LEAVE_TYPES`) |
 | Status colors / labels | `src/lib/transform.ts` (`statusMeta`) |
 | How often it re-polls | `src/lib/config.ts` (`REFRESH_INTERVAL_MS`) |
+| Which cases the detail table shows | `src/lib/transform.ts` (`detailGroups`, `LONG_MEDICAL_MIN_DAYS`) |
 | Column → field mapping | `src/lib/types.ts` (`HEADER_MAP`) |
 | Colors, spacing, dark theme | `src/styles.css` |
 

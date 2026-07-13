@@ -1,6 +1,5 @@
-import { useMemo, useState } from "react";
-import type { LeaveRow } from "../lib/types";
-import { leaveTypeMeta, statusMeta, sortByAppliedDesc } from "../lib/transform";
+import { useState } from "react";
+import { statusMeta, type DetailGroup } from "../lib/transform";
 
 const GROUP_LIMIT = 8; // rows shown per group before "show all"
 
@@ -13,16 +12,16 @@ function StatusPill({ status }: { status: string }) {
   );
 }
 
-function Group({ code, rows }: { code: string; rows: LeaveRow[] }) {
+function Group({ group }: { group: DetailGroup }) {
   const [expanded, setExpanded] = useState(false);
-  const meta = leaveTypeMeta(code);
+  const { rows } = group;
   const shown = expanded ? rows : rows.slice(0, GROUP_LIMIT);
 
   return (
     <section className="leave-group">
       <header className="leave-group-head">
-        <span className="swatch" style={{ background: meta.color }} />
-        <h3>{meta.label}</h3>
+        <span className="swatch" style={{ background: group.color }} />
+        <h3>{group.label}</h3>
         <span className="count-badge">{rows.length}</span>
       </header>
       <div className="table-scroll">
@@ -64,28 +63,21 @@ function Group({ code, rows }: { code: string; rows: LeaveRow[] }) {
   );
 }
 
-export function LeaveTable({ rows }: { rows: LeaveRow[] }) {
-  const groups = useMemo(() => {
-    const byType = new Map<string, LeaveRow[]>();
-    for (const r of rows) {
-      const code = (r.leaveType || "—").toUpperCase();
-      const arr = byType.get(code) ?? [];
-      arr.push(r);
-      byType.set(code, arr);
-    }
-    return [...byType.entries()]
-      .map(([code, list]) => ({ code, list: sortByAppliedDesc(list) }))
-      .sort((a, b) => b.list.length - a.list.length);
-  }, [rows]);
+export function LeaveTable({ groups }: { groups: DetailGroup[] }) {
+  const nonEmpty = groups.filter((g) => g.rows.length > 0);
 
-  if (!rows.length) {
-    return <div className="empty">No leave records match the current filters.</div>;
+  if (!nonEmpty.length) {
+    return (
+      <div className="empty">
+        No maternity, long medical, or loss-of-pay cases match the current filters.
+      </div>
+    );
   }
 
   return (
     <div className="leave-groups">
-      {groups.map((g) => (
-        <Group key={g.code} code={g.code} rows={g.list} />
+      {nonEmpty.map((g) => (
+        <Group key={g.key} group={g} />
       ))}
     </div>
   );

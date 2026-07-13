@@ -5,6 +5,7 @@ import {
   leavesByType,
   leavesByCountry,
   summarize,
+  detailGroups,
   presentLeaveTypes,
   presentStatuses,
   presentCountries,
@@ -31,6 +32,11 @@ export default function App() {
   const summary = useMemo(() => summarize(filtered), [filtered]);
   const slices = useMemo(() => leavesByType(filtered), [filtered]);
   const countries = useMemo(() => leavesByCountry(filtered), [filtered]);
+  const details = useMemo(() => detailGroups(filtered), [filtered]);
+  const detailCount = useMemo(
+    () => details.reduce((s, g) => s + g.rows.length, 0),
+    [details],
+  );
   const leaveTypes = useMemo(() => presentLeaveTypes(rows), [rows]);
   const statuses = useMemo(() => presentStatuses(rows), [rows]);
   const countryOptions = useMemo(() => presentCountries(rows), [rows]);
@@ -95,12 +101,16 @@ export default function App() {
       </div>
 
       <div className="panel">
-        <h2 className="panel-title">Leave records</h2>
-        <LeaveTable rows={filtered} />
+        <h2 className="panel-title">
+          Cases in detail — maternity, long medical &amp; loss of pay
+        </h2>
+        <LeaveTable groups={details} />
       </div>
 
       <footer className="footer">
-        {filtered.length.toLocaleString()} of {rows.length.toLocaleString()} records shown
+        {detailCount.toLocaleString()} detailed{" "}
+        {detailCount === 1 ? "case" : "cases"} · {filtered.length.toLocaleString()} total
+        leaves in view
       </footer>
     </div>
   );
