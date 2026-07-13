@@ -51,6 +51,7 @@ export function DetailTable({
               <th>Return date</th>
               <th>Leave status</th>
               <th>Approval status</th>
+              <th>Reason</th>
             </tr>
           </thead>
           <tbody>
@@ -68,6 +69,9 @@ export function DetailTable({
                 </td>
                 <td>
                   <StatusPill status={r.status} />
+                </td>
+                <td className="reason" title={r.reason}>
+                  {r.reason || "—"}
                 </td>
               </tr>
             ))}

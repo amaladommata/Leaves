@@ -146,9 +146,9 @@ export interface DateRange {
 
 export interface Filters {
   search: string;
-  leaveStatus: "" | LeaveState; // "" = all
-  approval: string; // "" = all, else exact status
-  leaveType: string; // "" = all (All-leaves page only)
+  leaveStatus: LeaveState[]; // empty = all
+  approval: string[]; // empty = all
+  leaveType: string[]; // empty = all (All-leaves page only)
   range: DateRange;
 }
 
@@ -174,11 +174,15 @@ export function applyFilters(
   const { from, to } = resolveRange(f.range);
   return rows.filter((r) => {
     if (!inCategory(r, view)) return false;
-    if (view === "all" && f.leaveType && r.leaveType.toUpperCase() !== f.leaveType) {
+    if (
+      view === "all" &&
+      f.leaveType.length &&
+      !f.leaveType.includes(r.leaveType.toUpperCase())
+    ) {
       return false;
     }
-    if (f.leaveStatus && r.state !== f.leaveStatus) return false;
-    if (f.approval && r.status !== f.approval) return false;
+    if (f.leaveStatus.length && !f.leaveStatus.includes(r.state)) return false;
+    if (f.approval.length && !f.approval.includes(r.status)) return false;
     if ((from || to) && !withinRange(r.start, from, to)) return false;
     if (q) {
       const hay =

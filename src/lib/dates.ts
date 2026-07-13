@@ -23,18 +23,28 @@ export function parseDateLoose(input: string): Date | null {
   return null;
 }
 
-/** First and last calendar day of a leave (chronological list assumed ordered). */
+/**
+ * First and last calendar day of a leave. Uses the Start Date / End Date columns
+ * when present; when either is "NA" (which it always is for sick leave and
+ * single-day leaves) that side is taken from the "Leave Dates" list instead —
+ * its first token is the start, its last token is the end. A single-day leave
+ * therefore gets start = end = that one date.
+ */
 export function leaveWindow(row: LeaveRow): { start: Date | null; end: Date | null } {
-  const tokens = (row.leaveDates || "")
-    .split(/[,\n]/)
-    .map((s) => s.trim())
-    .filter(Boolean);
+  let start = parseDateLoose(row.startDate);
+  let end = parseDateLoose(row.endDate);
 
-  let start = tokens.length ? parseDateLoose(tokens[0]) : null;
-  let end = tokens.length ? parseDateLoose(tokens[tokens.length - 1]) : null;
+  if (!start || !end) {
+    const tokens = (row.leaveDates || "")
+      .split(/[,\n]/)
+      .map((s) => s.trim())
+      .filter(Boolean);
+    if (tokens.length) {
+      if (!start) start = parseDateLoose(tokens[0]);
+      if (!end) end = parseDateLoose(tokens[tokens.length - 1]);
+    }
+  }
 
-  if (!start) start = parseDateLoose(row.startDate);
-  if (!end) end = parseDateLoose(row.endDate);
   if (start && !end) end = start;
   if (end && !start) start = end;
 

@@ -1,5 +1,6 @@
 import { leaveTypeMeta, type Filters as FilterState } from "../lib/transform";
 import { fyLabel } from "../lib/dates";
+import { MultiSelect } from "./MultiSelect";
 
 interface Props {
   filters: FilterState;
@@ -9,6 +10,12 @@ interface Props {
   statuses: string[];
   fyOptions: number[];
 }
+
+const LEAVE_STATUS_OPTIONS = [
+  { value: "upcoming", label: "Upcoming" },
+  { value: "ongoing", label: "Ongoing" },
+  { value: "completed", label: "Completed" },
+];
 
 export function Filters({
   filters,
@@ -34,43 +41,27 @@ export function Filters({
         />
 
         {showLeaveType && (
-          <select
-            className="field"
-            value={filters.leaveType}
-            onChange={(e) => set({ leaveType: e.target.value })}
-          >
-            <option value="">All leave types</option>
-            {leaveTypes.map((t) => (
-              <option key={t} value={t}>
-                {leaveTypeMeta(t).label}
-              </option>
-            ))}
-          </select>
+          <MultiSelect
+            placeholder="All leave types"
+            options={leaveTypes.map((t) => ({ value: t, label: leaveTypeMeta(t).label }))}
+            selected={filters.leaveType}
+            onChange={(v) => set({ leaveType: v })}
+          />
         )}
 
-        <select
-          className="field"
-          value={filters.leaveStatus}
-          onChange={(e) => set({ leaveStatus: e.target.value as FilterState["leaveStatus"] })}
-        >
-          <option value="">All leave statuses</option>
-          <option value="upcoming">Upcoming</option>
-          <option value="ongoing">Ongoing</option>
-          <option value="completed">Completed</option>
-        </select>
+        <MultiSelect
+          placeholder="All leave statuses"
+          options={LEAVE_STATUS_OPTIONS}
+          selected={filters.leaveStatus}
+          onChange={(v) => set({ leaveStatus: v as FilterState["leaveStatus"] })}
+        />
 
-        <select
-          className="field"
-          value={filters.approval}
-          onChange={(e) => set({ approval: e.target.value })}
-        >
-          <option value="">All approvals</option>
-          {statuses.map((s) => (
-            <option key={s} value={s}>
-              {s}
-            </option>
-          ))}
-        </select>
+        <MultiSelect
+          placeholder="All approvals"
+          options={statuses.map((s) => ({ value: s, label: s }))}
+          selected={filters.approval}
+          onChange={(v) => set({ approval: v })}
+        />
 
         <select
           className="field"

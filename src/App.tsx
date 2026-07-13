@@ -32,9 +32,9 @@ export default function App() {
   const [view, setView] = useState<ViewKey>("all");
   const [filters, setFilters] = useState<FilterState>({
     search: "",
-    leaveStatus: "",
-    approval: "",
-    leaveType: "",
+    leaveStatus: [],
+    approval: [],
+    leaveType: [],
     range: { mode: `fy:${currentFY}`, customFrom: "", customTo: "" },
   });
 

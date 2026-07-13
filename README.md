@@ -110,8 +110,10 @@ A left **sidebar** switches between four views:
   bar chart, and a full employee detail table (with a Leave-type column).
 
 Every page shares the same filter bar — **search · leave type** (All leaves only)
-**· leave status · approval status · date range** — and the same detail table
-columns: MM ID · Employee · Country · Start · End · Return · Leave status · Approval.
+**· leave status · approval status · date range**. The leave-type, leave-status
+and approval filters are **multi-select checkbox dropdowns**, so you can combine
+conditions (e.g. Upcoming + Ongoing). All pages use the same detail table columns:
+MM ID · Employee · Country · Start · End · Return · Leave status · Approval · Reason.
 
 ### Leave status & dates
 
